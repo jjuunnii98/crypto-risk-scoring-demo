@@ -205,3 +205,11 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Project-specific
+data/raw/**/*.parquet
+data/raw/**/*.csv
+!data/raw/.gitkeep
+models/*.pkl
+models/*.joblib
+.env
