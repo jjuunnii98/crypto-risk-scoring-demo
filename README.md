@@ -3,6 +3,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Tests](https://img.shields.io/badge/tests-40%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/jjuunnii98/crypto-risk-scoring-demo)
 
 End-to-end pipeline that scores cryptocurrency market risk in real time. Pulls live data from the Binance public API, computes technical and volatility features, and returns a risk score (0–100) using a **Cox Proportional Hazards survival model** (C-index 0.862). Served via a FastAPI service — no API key required.
 
@@ -151,6 +152,19 @@ curl http://localhost:8000/model/info
   "features": ["log_return", "rsi_14", "bb_width_20", "..."]
 }
 ```
+
+---
+
+## Deployment
+
+The service is deployable to [Render](https://render.com) using the included `render.yaml`.
+
+1. Fork or connect this repo to Render
+2. Render detects `render.yaml` automatically — click **Deploy**
+3. Build installs `requirements.txt`; startup loads the pre-trained `risk_model.pkl`
+4. Health check hits `GET /health`; service is live in ~2 minutes
+
+> **Free tier note:** the instance spins down after 15 min of inactivity. First request after idle triggers a cold start (~30s). Upgrade to a paid plan to eliminate this.
 
 ---
 

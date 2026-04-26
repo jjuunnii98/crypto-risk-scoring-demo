@@ -28,7 +28,8 @@ from src.models.survival import CryptoSurvivalModel, DURATION_WINDOW, EVENT_THRE
 
 logger = structlog.get_logger(__name__)
 
-MODEL_PATH = Path("data/raw/risk_model.pkl")
+# Absolute path so the artifact is found regardless of working directory
+MODEL_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "risk_model.pkl"
 _scorer: RiskScorer | None = None
 
 
