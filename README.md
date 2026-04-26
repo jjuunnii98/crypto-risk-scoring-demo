@@ -3,9 +3,13 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Tests](https://img.shields.io/badge/tests-40%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/jjuunnii98/crypto-risk-scoring-demo)
+[![Live API](https://img.shields.io/badge/live%20API-onrender.com-46E3B7)](https://crypto-risk-scoring-demo.onrender.com/docs)
 
 End-to-end pipeline that scores cryptocurrency market risk in real time. Pulls live data from the Binance public API, computes technical and volatility features, and returns a risk score (0–100) using a **Cox Proportional Hazards survival model** (C-index 0.862). Served via a FastAPI service — no API key required.
+
+**Live API docs:** [https://crypto-risk-scoring-demo.onrender.com/docs](https://crypto-risk-scoring-demo.onrender.com/docs)
+
+> Free-tier instance sleeps after 15 min of inactivity. First request may take ~30s to wake up.
 
 ---
 
@@ -96,18 +100,22 @@ Using time-to-event (1–24h) rather than a binary label preserves the ordering 
 
 ---
 
-## API
+## Live API
 
-Start the server (trained model artifact included):
+**Interactive docs (Swagger UI):** [https://crypto-risk-scoring-demo.onrender.com/docs](https://crypto-risk-scoring-demo.onrender.com/docs)
 
-```bash
-uvicorn src.api.main:app --reload
-```
+| Endpoint | Method | Description |
+|---|---|---|
+| `/docs` | GET | Interactive Swagger UI — try endpoints in the browser |
+| `/health` | GET | Liveness probe |
+| `/model/info` | GET | C-index, feature list, event definition |
+| `/score` | POST | Batch risk scoring |
+| `/score/{symbol}` | GET | Single symbol score |
 
 **`POST /score`** — batch symbols
 
 ```bash
-curl -X POST http://localhost:8000/score \
+curl -X POST https://crypto-risk-scoring-demo.onrender.com/score \
   -H "Content-Type: application/json" \
   -d '{"symbols": ["BTCUSDT", "ETHUSDT", "SOLUSDT"]}'
 ```
@@ -133,13 +141,13 @@ curl -X POST http://localhost:8000/score \
 **`GET /score/{symbol}`** — single symbol
 
 ```bash
-curl http://localhost:8000/score/BTCUSDT
+curl https://crypto-risk-scoring-demo.onrender.com/score/BTCUSDT
 ```
 
 **`GET /model/info`** — model metadata
 
 ```bash
-curl http://localhost:8000/model/info
+curl https://crypto-risk-scoring-demo.onrender.com/model/info
 ```
 
 ```json
@@ -157,14 +165,13 @@ curl http://localhost:8000/model/info
 
 ## Deployment
 
-The service is deployable to [Render](https://render.com) using the included `render.yaml`.
+Deployed on [Render](https://render.com) using the included `render.yaml`.
 
-1. Fork or connect this repo to Render
+To self-host:
+1. Fork this repo and connect to Render
 2. Render detects `render.yaml` automatically — click **Deploy**
 3. Build installs `requirements.txt`; startup loads the pre-trained `risk_model.pkl`
 4. Health check hits `GET /health`; service is live in ~2 minutes
-
-> **Free tier note:** the instance spins down after 15 min of inactivity. First request after idle triggers a cold start (~30s). Upgrade to a paid plan to eliminate this.
 
 ---
 
@@ -182,6 +189,7 @@ pip install -r requirements.txt
 
 # 3. Start the API (pre-trained artifact already included)
 uvicorn src.api.main:app --reload
+# → http://localhost:8000/docs
 
 # 4. Run tests
 pytest tests/ -v   # 40 tests
@@ -220,6 +228,7 @@ crypto-risk-scoring-demo/
 │   └── test_api.py               # FastAPI integration tests (11 cases)
 ├── data/raw/
 │   └── risk_model.pkl            # pre-trained Cox PH artifact
+├── render.yaml                   # Render deployment config
 └── requirements.txt
 ```
 
